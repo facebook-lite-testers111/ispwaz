@@ -945,7 +945,7 @@ export default function DesignShowcase() {
           
           {/* Type Selector */}
           <div className="flex justify-center space-x-4 mb-8">
-            {['package', 'ftp', 'coverage', 'offer'].map((type) => (
+            {(['package', 'ftp', 'coverage', 'offer'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setCurrentType(type)}

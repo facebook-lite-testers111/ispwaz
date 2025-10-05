@@ -18,6 +18,13 @@ interface ContactInfo {
   address: string;
 }
 
+interface NavItem {
+  name: string;
+  href: string;
+  active?: boolean;
+  badge?: number;
+}
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoSettings, setLogoSettings] = useState<LogoSettings>({
@@ -58,7 +65,7 @@ export default function Header() {
       });
   }, []);
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { name: 'Home', href: '#home', active: true },
     { name: 'Our Packages', href: '#packages' },
     { name: 'FTP/TV', href: '#ftp-tv' },
@@ -132,7 +139,7 @@ export default function Header() {
                 {item.name}
                 {item.badge && (
                   <Badge className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-1 min-w-0 h-5">
-                    4
+                    {item.badge}
                   </Badge>
                 )}
                         {item.active && (
