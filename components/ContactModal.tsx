@@ -26,35 +26,37 @@ export default function ContactModal() {
     message: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Create new message
-    const newMessage = {
-      id: Date.now().toString(),
-      name: formData.name,
-      email: formData.phone,
-      message: formData.message,
-      timestamp: new Date().toISOString(),
-      isRead: false
-    };
+    try {
+      // Send message to API
+      const response = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.phone,
+          message: formData.message
+        }),
+      });
 
-    // Get existing messages from localStorage
-    const existingMessages = localStorage.getItem('wazonline-messages');
-    const messages = existingMessages ? JSON.parse(existingMessages) : [];
-    
-    // Add new message
-    messages.push(newMessage);
-    
-    // Save back to localStorage
-    localStorage.setItem('wazonline-messages', JSON.stringify(messages));
-    
-    // Reset form and close modal
-    setFormData({ name: '', phone: '', message: '' });
-    setIsOpen(false);
-    
-    // Show success message
-    alert('Message sent successfully! We will get back to you soon.');
+      if (response.ok) {
+        // Reset form and close modal
+        setFormData({ name: '', phone: '', message: '' });
+        setIsOpen(false);
+        
+        // Show success message
+        alert('Message sent successfully! We will get back to you soon.');
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -64,12 +66,18 @@ export default function ContactModal() {
     });
   };
 
-  // Load contact info from localStorage
+  // Load contact info from API
   useEffect(() => {
-    const savedContactInfo = localStorage.getItem('wazonline-contact');
-    if (savedContactInfo) {
-      setContactInfo(JSON.parse(savedContactInfo));
-    }
+    fetch('/api/content?key=contactInfo')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setContactInfo(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading contact info:', error);
+      });
   }, []);
 
   const handleCallClick = (phoneNumber: string) => {

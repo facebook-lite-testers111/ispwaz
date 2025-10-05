@@ -97,78 +97,33 @@ export default function Pricing() {
     }
   ]);
 
-  // Load packages from localStorage on component mount
+  // Load packages from API on component mount
   useEffect(() => {
-    const savedPackages = localStorage.getItem('wazonline-packages');
-    console.log('Pricing - Loading packages:', {
-      savedPackages: savedPackages ? JSON.parse(savedPackages) : 'none',
-      currentPackages: packages
-    });
-    
-    if (savedPackages) {
-      setPackages(JSON.parse(savedPackages));
-    } else {
-      // Force set default packages if none exist
-      console.log('Pricing - No saved packages, using defaults');
-      setPackages([
-        {
-          id: '1',
-          type: 'REGULAR',
-          name: 'Regular 840',
-          price: 840,
-          color: 'bg-yellow-100',
-          textColor: 'text-blue-600',
-          features: [
-            '40 Mb/s ( 20 Mb/s + 20 Mb/s Bonus) Internet (Shared)',
-            'Bufferless Cached Content',
-            'Up to 100 Mb/s VAS',
-            'Public IP (IPv6)'
-          ]
-        },
-        {
-          id: '2',
-          type: 'REGULAR',
-          name: 'Regular 1050',
-          price: 1050,
-          color: 'bg-yellow-100',
-          textColor: 'text-blue-600',
-          features: [
-            '60 Mb/s ( 40 Mb/s + 20 Mb/s Bonus) Internet (Shared)',
-            'Bufferless Cached Content',
-            'Up to 150 Mb/s VAS',
-            'Public IP (IPv6)'
-          ]
-        },
-        {
-          id: '3',
-          type: 'PREMIUM',
-          name: 'Premium 1500',
-          price: 1500,
-          color: 'bg-blue-100',
-          textColor: 'text-blue-600',
-          features: [
-            '100 Mb/s ( 80 Mb/s + 20 Mb/s Bonus) Internet (Shared)',
-            'Bufferless Cached Content',
-            'Up to 200 Mb/s VAS',
-            'Public IP (IPv6)'
-          ]
+    fetch('/api/content?key=packages')
+      .then(res => res.json())
+      .then(data => {
+        if (data !== undefined && data !== null) {
+          console.log('Pricing - Loaded packages from API:', data);
+          setPackages(data);
         }
-      ]);
-    }
+      })
+      .catch(error => {
+        console.error('Error loading packages:', error);
+      });
   }, []);
 
-  // Load main page content from localStorage
+  // Load main page content from API
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-      if (savedMainPageContent) {
-        setMainPageContent(JSON.parse(savedMainPageContent));
-      }
-    } catch (error) {
-      console.error('Error loading main page content:', error);
-    }
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
+      });
   }, []);
 
   // Note: Packages are saved manually from admin panel, not automatically

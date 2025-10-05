@@ -47,20 +47,29 @@ export default function OffersSection() {
   const [offers, setOffers] = useState<Offer[]>([]);
 
   useEffect(() => {
-    // Load main page content
-    const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-    if (savedMainPageContent) {
-      setMainPageContent(JSON.parse(savedMainPageContent));
-    }
+    // Load main page content from API
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
+      });
 
-    const savedOffers = localStorage.getItem('wazonline-offers');
-    
-    if (savedOffers) {
-      setOffers(JSON.parse(savedOffers));
-    } else {
-      // Demo data - only for display, not saved to localStorage
-      console.log('OffersSection - Setting demo data');
-      setOffers([
+    // Load offers from API
+    fetch('/api/content?key=offers')
+      .then(res => res.json())
+      .then(data => {
+        if (data !== undefined && data !== null) {
+          console.log('OffersSection - Loaded from API');
+          setOffers(data);
+        } else {
+          // Set default demo data if no offers exist (first time only)
+          console.log('OffersSection - Setting demo data');
+          setOffers([
         {
           id: '1',
           title: 'নতুন সংযোগের জন্য ব্রেকার চার্জ ২০০/- টেকনিশিয়ান সার্ভিস ফ্রি।',
@@ -86,7 +95,11 @@ export default function OffersSection() {
           isActive: true
         }
       ]);
-    }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading offers:', error);
+      });
   }, []);
 
   return (
@@ -114,7 +127,11 @@ export default function OffersSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+        <div className={`grid grid-cols-1 gap-6 auto-rows-fr ${
+          offers.filter(o => o.isActive).length >= 3 
+            ? 'md:grid-cols-2 lg:grid-cols-3' 
+            : 'max-w-2xl mx-auto'
+        }`}>
           {offers.length === 0 ? (
             <div className="text-center py-8 text-gray-500 col-span-full">
               <p>No offers available</p>

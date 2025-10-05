@@ -45,20 +45,18 @@ export default function Features() {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-      console.log('Features - Loading main page content:', {
-        savedMainPageContent: savedMainPageContent ? JSON.parse(savedMainPageContent) : 'none'
+    // Fetch main page content from API
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          console.log('Features - Loaded main page content from API');
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
       });
-      
-      if (savedMainPageContent) {
-        setMainPageContent(JSON.parse(savedMainPageContent));
-      }
-    } catch (error) {
-      console.error('Error loading main page content:', error);
-    }
   }, []);
   const features = [
     {

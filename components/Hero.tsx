@@ -37,16 +37,17 @@ export default function Hero() {
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-      if (savedMainPageContent) {
-        setMainPageContent(JSON.parse(savedMainPageContent));
-      }
-    } catch (error) {
-      console.error('Error loading main page content:', error);
-    }
+    // Fetch main page content from API
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
+      });
   }, []);
 
   return (

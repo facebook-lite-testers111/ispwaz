@@ -47,20 +47,29 @@ export default function CoverageSection() {
   const [coverageAreas, setCoverageAreas] = useState<CoverageArea[]>([]);
 
   useEffect(() => {
-    // Load main page content
-    const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-    if (savedMainPageContent) {
-      setMainPageContent(JSON.parse(savedMainPageContent));
-    }
+    // Load main page content from API
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
+      });
 
-    const savedCoverageAreas = localStorage.getItem('wazonline-coverage-areas');
-    
-    if (savedCoverageAreas) {
-      setCoverageAreas(JSON.parse(savedCoverageAreas));
-    } else {
-      // Demo data - only for display, not saved to localStorage
-      console.log('CoverageSection - Setting demo data');
-      setCoverageAreas([
+    // Load coverage areas from API
+    fetch('/api/content?key=coverageAreas')
+      .then(res => res.json())
+      .then(data => {
+        if (data !== undefined && data !== null) {
+          console.log('CoverageSection - Loaded from API');
+          setCoverageAreas(data);
+        } else {
+          // Set default demo data if no areas exist (first time only)
+          console.log('CoverageSection - Setting demo data');
+          setCoverageAreas([
         {
           id: '1',
           area: 'Dhaka',
@@ -86,7 +95,11 @@ export default function CoverageSection() {
           description: 'Limited coverage in selected areas'
         }
       ]);
-    }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading coverage areas:', error);
+      });
   }, []);
 
   const getStatusIcon = (status: string) => {
@@ -141,7 +154,11 @@ export default function CoverageSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+        <div className={`grid grid-cols-1 gap-6 auto-rows-fr ${
+          coverageAreas.length >= 3 
+            ? 'md:grid-cols-2 lg:grid-cols-3' 
+            : 'max-w-2xl mx-auto'
+        }`}>
           {coverageAreas.length === 0 ? (
             <div className="text-center py-8 text-gray-500 col-span-full">
               <p>No coverage areas available</p>

@@ -180,9 +180,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-2xl font-bold shadow-lg transition-all duration-300">
-            {type === 'package' ? 'ACTIVATE' : type === 'ftp' ? 'ACCESS' : type === 'coverage' ? 'LOCATE' : 'CLAIM'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-3 rounded-2xl font-bold shadow-lg transition-all duration-300">
+              {type === 'package' ? 'ACTIVATE' : 'ACCESS'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -203,9 +205,11 @@ export const cardDesigns = [
             <div className="text-3xl font-black text-black">৳{data.price}</div>
           </div>
         )}
-        <button className="w-full bg-black text-white border-2 border-black hover:bg-white hover:text-black py-3 font-black uppercase tracking-wider transition-all duration-200">
-          {type === 'package' ? 'BUY NOW' : type === 'ftp' ? 'CONNECT' : type === 'coverage' ? 'CHECK' : 'GRAB IT'}
-        </button>
+        {(type === 'package' || type === 'ftp') && (
+          <button className="w-full bg-black text-white border-2 border-black hover:bg-white hover:text-black py-3 font-black uppercase tracking-wider transition-all duration-200">
+            {type === 'package' ? 'BUY NOW' : 'CONNECT'}
+          </button>
+        )}
       </div>
     )
   },
@@ -226,9 +230,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-cyan-400 mb-3 font-mono">৳{data.price}</div>
           )}
-          <button className="w-full bg-cyan-400 text-black hover:bg-cyan-300 font-mono font-bold py-2.5 rounded-lg transition-all">
-            {type === 'package' ? 'INITIATE' : type === 'ftp' ? 'CONNECT' : type === 'coverage' ? 'SCAN' : 'ACTIVATE'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-cyan-400 text-black hover:bg-cyan-300 font-mono font-bold py-2.5 rounded-lg transition-all">
+              {type === 'package' ? 'INITIATE' : 'CONNECT'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -250,9 +256,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold text-blue-600 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-semibold shadow-lg transition-all">
-            {type === 'package' ? 'Get Started' : type === 'ftp' ? 'Access Now' : type === 'coverage' ? 'Check Coverage' : 'Get Deal'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl font-semibold shadow-lg transition-all">
+              {type === 'package' ? 'Get Started' : 'Access Now'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -283,14 +291,16 @@ export const cardDesigns = [
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-2">{data.name || data.title || data.area}</h3>
           <p className="text-gray-600 text-xs mb-3 line-clamp-2">{data.description}</p>
-          <div className="flex items-center space-x-2">
-            <button className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-2 rounded-lg font-semibold text-sm transition-all">
-              {type === 'package' ? 'Get Started' : type === 'ftp' ? 'Access Now' : type === 'coverage' ? 'Check Area' : 'Claim Offer'}
-            </button>
-            <button className="px-3 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg font-semibold transition-all">
-              <ExternalLink className="w-4 h-4" />
-            </button>
-          </div>
+          {(type === 'package' || type === 'ftp') && (
+            <div className="flex items-center space-x-2">
+              <button className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-2 rounded-lg font-semibold text-sm transition-all">
+                {type === 'package' ? 'Get Started' : 'Access Now'}
+              </button>
+              <button className="px-3 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-lg font-semibold transition-all">
+                <ExternalLink className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )
@@ -324,9 +334,11 @@ export const cardDesigns = [
               <span className="text-gray-500 ml-2 text-xs">/mo</span>
             </div>
           )}
-          <button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">
-            {type === 'package' ? 'Subscribe Now' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View Coverage' : 'Get Deal'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all">
+              {type === 'package' ? 'Subscribe Now' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -364,9 +376,11 @@ export const cardDesigns = [
         <div className="p-4">
           <h3 className="text-lg font-bold text-gray-900 mb-2">{data.name || data.title || data.area}</h3>
           <p className="text-gray-600 text-xs mb-3 line-clamp-2">{data.description}</p>
-          <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2.5 rounded-xl font-bold shadow-lg transition-all">
-            {type === 'package' ? 'Choose Plan' : type === 'ftp' ? 'Access Server' : type === 'coverage' ? 'View Details' : 'Get Offer'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2.5 rounded-xl font-bold shadow-lg transition-all">
+              {type === 'package' ? 'Choose Plan' : 'Access Server'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -402,9 +416,11 @@ export const cardDesigns = [
                 <div className="text-xs text-gray-500">/mo</div>
               </div>
             )}
-            <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold text-xs transition-all">
-              {type === 'package' ? 'Buy' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'View' : 'Claim'}
-            </button>
+            {(type === 'package' || type === 'ftp') && (
+              <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold text-xs transition-all">
+                {type === 'package' ? 'Buy' : 'Access'}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -438,9 +454,11 @@ export const cardDesigns = [
           </div>
         )}
         
-        <button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-3 rounded-xl font-bold shadow-lg transition-all">
-          {type === 'package' ? 'Get Started' : type === 'ftp' ? 'Connect Now' : type === 'coverage' ? 'Check Coverage' : 'Claim Offer'}
-        </button>
+        {(type === 'package' || type === 'ftp') && (
+          <button className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-3 rounded-xl font-bold shadow-lg transition-all">
+            {type === 'package' ? 'Get Started' : 'Connect Now'}
+          </button>
+        )}
       </div>
     )
   },
@@ -472,9 +490,11 @@ export const cardDesigns = [
               <div className="text-xs text-gray-500">per month</div>
             </div>
           )}
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all ml-auto">
-            {type === 'package' ? 'Subscribe' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'View' : 'Get'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold transition-all ml-auto">
+              {type === 'package' ? 'Subscribe' : 'Access'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -507,9 +527,11 @@ export const cardDesigns = [
             </div>
           )}
           
-          <button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-3 rounded-xl font-bold shadow-lg transition-all">
-            {type === 'package' ? 'Choose This Plan' : type === 'ftp' ? 'Connect Now' : type === 'coverage' ? 'View Area' : 'Claim Now'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white py-3 rounded-xl font-bold shadow-lg transition-all">
+              {type === 'package' ? 'Choose This Plan' : 'Connect Now'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -531,9 +553,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold text-gray-800 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-gray-100 text-gray-800 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 rounded-full font-semibold transition-all duration-300">
-            {type === 'package' ? 'Select' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gray-100 text-gray-800 shadow-[4px_4px_8px_#bebebe,-4px_-4px_8px_#ffffff] hover:shadow-[inset_4px_4px_8px_#bebebe,inset_-4px_-4px_8px_#ffffff] py-3 rounded-full font-semibold transition-all duration-300">
+              {type === 'package' ? 'Select' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -560,9 +584,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-purple-400 mb-3 font-mono">৳{data.price}</div>
           )}
-          <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2.5 rounded-xl shadow-lg transition-all">
-            {type === 'package' ? 'LEVEL UP' : type === 'ftp' ? 'DOWNLOAD' : type === 'coverage' ? 'EXPLORE' : 'UNLOCK'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2.5 rounded-xl shadow-lg transition-all">
+              {type === 'package' ? 'LEVEL UP' : 'DOWNLOAD'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -591,9 +617,11 @@ export const cardDesigns = [
             </div>
           </div>
           <p className="text-gray-600 text-sm mb-4">{data.description}</p>
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 transform hover:translate-x-1 transition-all">
-            {type === 'package' ? 'Select Plan' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 transform hover:translate-x-1 transition-all">
+              {type === 'package' ? 'Select Plan' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -617,9 +645,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-blue-600 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-gradient-to-r from-blue-400/80 to-purple-400/80 backdrop-blur-sm hover:from-blue-500/90 hover:to-purple-500/90 text-white py-2.5 rounded-2xl font-semibold transition-all">
-            {type === 'package' ? 'Choose' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-blue-400/80 to-purple-400/80 backdrop-blur-sm hover:from-blue-500/90 hover:to-purple-500/90 text-white py-2.5 rounded-2xl font-semibold transition-all">
+              {type === 'package' ? 'Choose' : 'Access'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -646,9 +676,11 @@ export const cardDesigns = [
             <div className="text-2xl font-bold text-gray-900 text-center">৳{data.price}</div>
           </div>
         )}
-        <button className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 rounded-lg font-semibold transition-all">
-          {type === 'package' ? 'Select' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-        </button>
+        {(type === 'package' || type === 'ftp') && (
+          <button className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white py-2 rounded-lg font-semibold transition-all">
+            {type === 'package' ? 'Select' : 'Connect'}
+          </button>
+        )}
       </div>
     )
   },
@@ -693,9 +725,11 @@ export const cardDesigns = [
         <div className="p-6">
           <h3 className="text-2xl font-black text-gray-900 mb-3 uppercase tracking-tight leading-tight">{data.name || data.title || data.area}</h3>
           <p className="text-gray-700 text-sm mb-6 leading-relaxed">{data.description}</p>
-          <button className="w-full bg-black hover:bg-gray-800 text-white py-3 px-6 font-bold uppercase tracking-wider transition-all">
-            {type === 'package' ? 'Subscribe' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'Read More' : 'Get Offer'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-black hover:bg-gray-800 text-white py-3 px-6 font-bold uppercase tracking-wider transition-all">
+              {type === 'package' ? 'Subscribe' : 'Access'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -719,9 +753,11 @@ export const cardDesigns = [
             </div>
           </div>
         )}
-        <button className="w-full bg-green-500 hover:bg-green-600 border-4 border-black text-black font-black py-3 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all uppercase" style={{ fontFamily: 'Impact, sans-serif' }}>
-          {type === 'package' ? 'POW!' : type === 'ftp' ? 'ZAP!' : type === 'coverage' ? 'BOOM!' : 'BANG!'}
-        </button>
+        {(type === 'package' || type === 'ftp') && (
+          <button className="w-full bg-green-500 hover:bg-green-600 border-4 border-black text-black font-black py-3 rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all uppercase" style={{ fontFamily: 'Impact, sans-serif' }}>
+            {type === 'package' ? 'POW!' : 'ZAP!'}
+          </button>
+        )}
       </div>
     )
   },
@@ -772,9 +808,11 @@ export const cardDesigns = [
             </div>
           </div>
           <p className="text-gray-700 text-sm mb-4">{data.description}</p>
-          <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2.5 rounded-lg font-semibold shadow-lg transition-all">
-            {type === 'package' ? 'Select' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2.5 rounded-lg font-semibold shadow-lg transition-all">
+              {type === 'package' ? 'Select' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -797,9 +835,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold text-pink-400 mb-4" style={{ textShadow: '0 0 10px rgba(236,72,153,0.5)' }}>৳{data.price}</div>
           )}
-          <button className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_25px_rgba(236,72,153,0.6)] transition-all">
-            {type === 'package' ? 'Get It' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:shadow-[0_0_25px_rgba(236,72,153,0.6)] transition-all">
+              {type === 'package' ? 'Get It' : 'Access'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -851,9 +891,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-cyan-400 mb-4 font-mono">৳{data.price}</div>
           )}
-          <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-gray-900 py-2.5 rounded font-bold font-mono transition-all">
-            {type === 'package' ? 'EXECUTE' : type === 'ftp' ? 'CONNECT' : type === 'coverage' ? 'SCAN' : 'ACTIVATE'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-cyan-500 hover:bg-cyan-600 text-gray-900 py-2.5 rounded font-bold font-mono transition-all">
+              {type === 'package' ? 'EXECUTE' : 'CONNECT'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -878,9 +920,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white py-3 rounded-2xl font-semibold shadow-lg transition-all">
-            {type === 'package' ? 'Select' : type === 'ftp' ? 'Access' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white py-3 rounded-2xl font-semibold shadow-lg transition-all">
+              {type === 'package' ? 'Select' : 'Access'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -902,9 +946,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold text-white mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3 rounded-lg font-semibold transition-all">
-            {type === 'package' ? 'Select' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-white hover:bg-gray-100 text-gray-900 py-3 rounded-lg font-semibold transition-all">
+              {type === 'package' ? 'Select' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -932,9 +978,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-3xl font-bold text-yellow-400 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-purple-900 font-bold py-3 rounded-xl shadow-lg transition-all">
-            {type === 'package' ? 'Launch' : type === 'ftp' ? 'Explore' : type === 'coverage' ? 'Discover' : 'Unlock'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-purple-900 font-bold py-3 rounded-xl shadow-lg transition-all">
+              {type === 'package' ? 'Launch' : 'Explore'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -956,9 +1004,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-gray-900 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition-all">
-            {type === 'package' ? 'Select' : type === 'ftp' ? 'Connect' : type === 'coverage' ? 'View' : 'Claim'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition-all">
+              {type === 'package' ? 'Select' : 'Connect'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -980,9 +1030,11 @@ export const cardDesigns = [
           {type === 'package' && (
             <div className="text-2xl font-bold text-blue-600 mb-4">৳{data.price}</div>
           )}
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-medium shadow-sm hover:shadow-md transition-all">
-            {type === 'package' ? 'Choose Plan' : type === 'ftp' ? 'Access Now' : type === 'coverage' ? 'View Details' : 'Get Offer'}
-          </button>
+          {(type === 'package' || type === 'ftp') && (
+            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-medium shadow-sm hover:shadow-md transition-all">
+              {type === 'package' ? 'Choose Plan' : 'Access Now'}
+            </button>
+          )}
         </div>
       </div>
     )
@@ -1014,9 +1066,14 @@ export default function DesignShowcase({ onClose }: Props) {
               </svg>
             </div>
             <h2 style="font-size: 24px; font-weight: bold; color: #111827; margin-bottom: 12px;">Applied: ${designName}</h2>
-            <p style="color: #6b7280; margin-bottom: 24px; font-size: 14px;">This design will now be used for all <strong>${currentType.charAt(0).toUpperCase() + currentType.slice(1)}</strong> section cards on your website.</p>
+            <p style="color: #6b7280; margin-bottom: 12px; font-size: 14px;">This design will now be used for all <strong>${currentType.charAt(0).toUpperCase() + currentType.slice(1)}</strong> section cards.</p>
+            <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 24px;">
+              <p style="color: #dc2626; font-weight: 600; font-size: 14px; margin: 0;">
+                ⚠️ IMPORTANT: Click "Save All Changes" button at the top to save to server!
+              </p>
+            </div>
             <button onclick="this.closest('div[style*=fixed]').remove()" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 12px 32px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; font-size: 16px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
-              OK
+              Got it!
             </button>
           </div>
         </div>

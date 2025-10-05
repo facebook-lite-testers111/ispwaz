@@ -13,13 +13,23 @@ export default function DynamicCard({ data, type, onClick }: DynamicCardProps) {
   const [selectedDesignId, setSelectedDesignId] = useState<string>('default-website');
 
   useEffect(() => {
-    // Load selected design from localStorage (per-type)
-    const savedDesignId = localStorage.getItem(`wazonline-card-design-${type}`);
-    if (savedDesignId) {
-      setSelectedDesignId(savedDesignId);
-    } else {
-      setSelectedDesignId('default-website');
-    }
+    // Load selected design from API (per-type)
+    fetch('/api/content?key=cardDesigns')
+      .then(res => res.json())
+      .then(data => {
+        console.log(`DynamicCard [${type}] - Loaded designs from API:`, data);
+        if (data && data[type]) {
+          console.log(`DynamicCard [${type}] - Using design: ${data[type]}`);
+          setSelectedDesignId(data[type]);
+        } else {
+          console.log(`DynamicCard [${type}] - No design found, using default`);
+          setSelectedDesignId('default-website');
+        }
+      })
+      .catch(error => {
+        console.error('Error loading card design:', error);
+        setSelectedDesignId('default-website');
+      });
   }, [type]);
 
   // Find the selected design

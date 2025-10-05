@@ -57,34 +57,28 @@ export default function FTPTVSection() {
   const [tvServices, setTvServices] = useState<TVService[]>([]);
 
   useEffect(() => {
-    // Check if we're in browser environment
-    if (typeof window === 'undefined') return;
-    
-    try {
-      // Load main page content
-      const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-      if (savedMainPageContent) {
-        setMainPageContent(JSON.parse(savedMainPageContent));
-      }
+    // Load main page content from API
+    fetch('/api/content?key=mainPageContent')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setMainPageContent(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading main page content:', error);
+      });
 
-      const savedFtpServices = localStorage.getItem('wazonline-ftp-services');
-      const savedTvServices = localStorage.getItem('wazonline-tv-services');
-      
-      console.log('FTPTVSection - Loading services:', {
-        savedFtpServices: savedFtpServices ? JSON.parse(savedFtpServices) : 'none',
-        savedTvServices: savedTvServices ? JSON.parse(savedTvServices) : 'none'
-      });
-      
-      console.log('FTPTVSection - Current state:', {
-        ftpServices: ftpServices,
-        tvServices: tvServices
-      });
-      
-      if (savedFtpServices) {
-        setFtpServices(JSON.parse(savedFtpServices));
-      } else {
-        // Demo data - only for display, not saved to localStorage
-        setFtpServices([
+    // Load FTP services from API
+    fetch('/api/content?key=ftpServices')
+      .then(res => res.json())
+      .then(data => {
+        if (data !== undefined && data !== null) {
+          console.log('FTPTVSection - Loaded FTP services from API');
+          setFtpServices(data);
+        } else {
+          // Set default demo data if no services exist (first time only)
+          setFtpServices([
           {
             id: '1',
             name: 'Waz Online FTP Server',
@@ -128,13 +122,22 @@ export default function FTPTVSection() {
             isActive: true
           }
         ]);
-      }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading FTP services:', error);
+      });
 
-      if (savedTvServices) {
-        setTvServices(JSON.parse(savedTvServices));
-      } else {
-        // Demo data - only for display, not saved to localStorage
-        setTvServices([
+    // Load TV services from API
+    fetch('/api/content?key=tvServices')
+      .then(res => res.json())
+      .then(data => {
+        if (data !== undefined && data !== null) {
+          console.log('FTPTVSection - Loaded TV services from API');
+          setTvServices(data);
+        } else {
+          // Set default demo data if no services exist (first time only)
+          setTvServices([
           {
             id: '1',
             name: 'IPTV Live TV',
@@ -192,10 +195,11 @@ export default function FTPTVSection() {
             isActive: true
           }
         ]);
-      }
-    } catch (error) {
-      console.error('Error loading FTP/TV services:', error);
-    }
+        }
+      })
+      .catch(error => {
+        console.error('Error loading TV services:', error);
+      });
   }, []);
 
   const handleServiceClick = (link: string) => {

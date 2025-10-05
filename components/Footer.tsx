@@ -19,18 +19,17 @@ export default function Footer() {
   });
 
   useEffect(() => {
-    // Check if we're in browser environment
-    if (typeof window === 'undefined') return;
-    
-    try {
-      const savedLogoSettings = localStorage.getItem('wazonline-logo-settings');
-      if (savedLogoSettings) {
-        const parsedSettings = JSON.parse(savedLogoSettings);
-        setLogoSettings(parsedSettings);
-      }
-    } catch (error) {
-      console.error('Error loading logo settings:', error);
-    }
+    // Fetch logo settings from API
+    fetch('/api/content?key=logoSettings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setLogoSettings(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading logo settings:', error);
+      });
   }, []);
   return (
     <footer className="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 text-white py-12 relative overflow-hidden">

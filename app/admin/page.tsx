@@ -11,6 +11,7 @@ import { Plus, Trash2, Save, RotateCcw, Phone, Mail, MapPin, Server, Tv, LogOut,
 import AdminLogin from '@/components/AdminLogin';
 import AdminSidebar from '@/components/AdminSidebar';
 import DesignShowcase from '@/components/DesignShowcase';
+import * as apiHelper from '@/lib/api-helper';
 
 interface Package {
   id: string;
@@ -134,6 +135,12 @@ export default function AdminPanel() {
     offersTitle: 'Special Offers',
     offersSubtitle: 'Limited time offers and promotions'
   });
+  const [cardDesigns, setCardDesigns] = useState({
+    package: 'default-website',
+    ftp: 'default-website',
+    coverage: 'default-website',
+    offer: 'default-website'
+  });
 
   const [newPackage, setNewPackage] = useState<Partial<Package>>({
     type: 'REGULAR',
@@ -171,32 +178,23 @@ export default function AdminPanel() {
   const [editingCoverageArea, setEditingCoverageArea] = useState<string | null>(null);
   const [editingOffer, setEditingOffer] = useState<string | null>(null);
 
-  // Check authentication and load data from localStorage on component mount
+  // Check authentication and load data from API on component mount
   useEffect(() => {
     const isAuth = localStorage.getItem('admin-authenticated') === 'true';
     setIsAuthenticated(isAuth);
     
     if (isAuth) {
-      const savedPackages = localStorage.getItem('wazonline-packages');
-      const savedContactInfo = localStorage.getItem('wazonline-contact');
-      const savedFtpServices = localStorage.getItem('wazonline-ftp-services');
-      const savedTvServices = localStorage.getItem('wazonline-tv-services');
-      const savedCoverageAreas = localStorage.getItem('wazonline-coverage-areas');
-      const savedOffers = localStorage.getItem('wazonline-offers');
-      const savedMessages = localStorage.getItem('wazonline-messages');
-      const savedLogoSettings = localStorage.getItem('wazonline-logo-settings');
-      const savedAdminSettings = localStorage.getItem('wazonline-admin-settings');
-      const savedMainPageContent = localStorage.getItem('wazonline-main-page-content');
-      
-      if (savedPackages) {
-        setPackages(JSON.parse(savedPackages));
-      }
-      if (savedContactInfo) {
-        setContactInfo(JSON.parse(savedContactInfo));
-      }
-      if (savedFtpServices) {
-        setFtpServices(JSON.parse(savedFtpServices));
-      } else {
+      // Load all data from API
+      apiHelper.getContent().then((data) => {
+        if (data.packages !== undefined) {
+          setPackages(data.packages);
+        }
+        if (data.contactInfo) {
+          setContactInfo(data.contactInfo);
+        }
+        if (data.ftpServices !== undefined) {
+          setFtpServices(data.ftpServices);
+        } else {
         // Demo FTP services
         const demoFtpServices = [
           {
@@ -243,10 +241,10 @@ export default function AdminPanel() {
           }
         ];
         setFtpServices(demoFtpServices);
-      }
-      if (savedTvServices) {
-        setTvServices(JSON.parse(savedTvServices));
-      } else {
+        }
+        if (data.tvServices !== undefined) {
+          setTvServices(data.tvServices);
+        } else {
         // Demo TV services
         const demoTvServices = [
           {
@@ -307,10 +305,10 @@ export default function AdminPanel() {
           }
         ];
         setTvServices(demoTvServices);
-      }
-      if (savedCoverageAreas) {
-        setCoverageAreas(JSON.parse(savedCoverageAreas));
-      } else {
+        }
+        if (data.coverageAreas !== undefined) {
+          setCoverageAreas(data.coverageAreas);
+        } else {
         // Demo coverage areas
         const demoCoverageAreas = [
           {
@@ -339,11 +337,11 @@ export default function AdminPanel() {
           }
         ];
         setCoverageAreas(demoCoverageAreas);
-      }
-      
-      if (savedOffers) {
-        setOffers(JSON.parse(savedOffers));
-      } else {
+        }
+        
+        if (data.offers !== undefined) {
+          setOffers(data.offers);
+        } else {
         // Demo offers
         const demoOffers = [
           {
@@ -372,31 +370,31 @@ export default function AdminPanel() {
           }
         ];
         setOffers(demoOffers);
-      }
-      if (savedMessages) {
-        setMessages(JSON.parse(savedMessages));
-      }
-      if (savedLogoSettings) {
-        try {
-          setLogoSettings(JSON.parse(savedLogoSettings));
-        } catch (error) {
-          console.error('Error loading logo settings:', error);
         }
-      }
-      if (savedAdminSettings) {
-        try {
-          setAdminSettings(JSON.parse(savedAdminSettings));
-        } catch (error) {
-          console.error('Error loading admin settings:', error);
+        
+        if (data.logoSettings) {
+          setLogoSettings(data.logoSettings);
         }
-      }
-      if (savedMainPageContent) {
-        try {
-          setMainPageContent(JSON.parse(savedMainPageContent));
-        } catch (error) {
-          console.error('Error loading main page content:', error);
+        if (data.mainPageContent) {
+          setMainPageContent(data.mainPageContent);
         }
-      }
+        if (data.cardDesigns) {
+          setCardDesigns(data.cardDesigns);
+          // Also sync to localStorage for immediate UI updates
+          Object.entries(data.cardDesigns).forEach(([type, designId]) => {
+            localStorage.setItem(`wazonline-card-design-${type}`, designId as string);
+          });
+        }
+      }).catch(error => {
+        console.error('Error loading content from API:', error);
+      });
+      
+      // Load messages separately
+      apiHelper.getMessages().then((messages) => {
+        setMessages(messages || []);
+      }).catch(error => {
+        console.error('Error loading messages:', error);
+      });
     }
   }, []);
 
@@ -432,34 +430,44 @@ export default function AdminPanel() {
     setPackages(packages.map(pkg => 
       pkg.id === id ? { ...pkg, ...updatedPackage } : pkg
     ));
-    setEditingPackage(null);
   };
 
-  const saveAll = () => {
-    localStorage.setItem('wazonline-packages', JSON.stringify(packages));
-    localStorage.setItem('wazonline-contact', JSON.stringify(contactInfo));
-    localStorage.setItem('wazonline-ftp-services', JSON.stringify(ftpServices));
-    localStorage.setItem('wazonline-tv-services', JSON.stringify(tvServices));
-    localStorage.setItem('wazonline-coverage-areas', JSON.stringify(coverageAreas));
-    localStorage.setItem('wazonline-offers', JSON.stringify(offers));
-    localStorage.setItem('wazonline-messages', JSON.stringify(messages));
-    localStorage.setItem('wazonline-logo-settings', JSON.stringify(logoSettings));
-    localStorage.setItem('wazonline-admin-settings', JSON.stringify(adminSettings));
-    localStorage.setItem('wazonline-main-page-content', JSON.stringify(mainPageContent));
-    alert('All changes saved successfully!');
+  const saveAll = async () => {
+    try {
+      // Update cardDesigns state from localStorage before saving
+      const updatedCardDesigns = {
+        package: localStorage.getItem('wazonline-card-design-package') || cardDesigns.package,
+        ftp: localStorage.getItem('wazonline-card-design-ftp') || cardDesigns.ftp,
+        coverage: localStorage.getItem('wazonline-card-design-coverage') || cardDesigns.coverage,
+        offer: localStorage.getItem('wazonline-card-design-offer') || cardDesigns.offer
+      };
+      setCardDesigns(updatedCardDesigns);
+      
+      console.log('Saving card designs to API:', updatedCardDesigns);
+      
+      // Save all data to API
+      await Promise.all([
+        apiHelper.updateContent('packages', packages),
+        apiHelper.updateContent('contactInfo', contactInfo),
+        apiHelper.updateContent('ftpServices', ftpServices),
+        apiHelper.updateContent('tvServices', tvServices),
+        apiHelper.updateContent('coverageAreas', coverageAreas),
+        apiHelper.updateContent('offers', offers),
+        apiHelper.updateContent('logoSettings', logoSettings),
+        apiHelper.updateContent('mainPageContent', mainPageContent),
+        apiHelper.updateContent('cardDesigns', updatedCardDesigns)
+      ]);
+      alert('All changes saved successfully!');
+    } catch (error) {
+      console.error('Error saving data:', error);
+      alert('Failed to save changes. Please try again.');
+    }
   };
 
   const resetAll = () => {
     if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
-      localStorage.removeItem('wazonline-packages');
-      localStorage.removeItem('wazonline-contact');
-      localStorage.removeItem('wazonline-ftp-services');
-      localStorage.removeItem('wazonline-tv-services');
-      localStorage.removeItem('wazonline-coverage-areas');
-      localStorage.removeItem('wazonline-offers');
-      localStorage.removeItem('wazonline-messages');
-      localStorage.removeItem('wazonline-logo-settings');
-      localStorage.removeItem('wazonline-admin-settings');
+      // Simply reload the page to get default data from API
+      // The API will return default values if data file is missing or corrupted
       window.location.reload();
     }
   };
@@ -553,20 +561,28 @@ export default function AdminPanel() {
     setOffers(offers.filter(offer => offer.id !== id));
   };
 
-  const markMessageAsRead = (id: string) => {
-    const updatedMessages = messages.map(msg => 
-      msg.id === id ? { ...msg, isRead: true } : msg
-    );
-    setMessages(updatedMessages);
-    // Immediately save to localStorage to persist read status
-    localStorage.setItem('wazonline-messages', JSON.stringify(updatedMessages));
+  const markMessageRead = async (id: string) => {
+    try {
+      await apiHelper.markMessageAsRead(id, true);
+      const updatedMessages = messages.map(msg => 
+        msg.id === id ? { ...msg, isRead: true } : msg
+      );
+      setMessages(updatedMessages);
+    } catch (error) {
+      console.error('Error updating message:', error);
+      alert('Failed to update message status');
+    }
   };
 
-  const deleteMessage = (id: string) => {
-    const updatedMessages = messages.filter(msg => msg.id !== id);
-    setMessages(updatedMessages);
-    // Immediately save to localStorage to prevent deleted messages from coming back
-    localStorage.setItem('wazonline-messages', JSON.stringify(updatedMessages));
+  const deleteMessage = async (id: string) => {
+    try {
+      await apiHelper.deleteMessage(id);
+      const updatedMessages = messages.filter(msg => msg.id !== id);
+      setMessages(updatedMessages);
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      alert('Failed to delete message');
+    }
   };
 
   const getUnreadCount = () => {
@@ -582,28 +598,24 @@ export default function AdminPanel() {
     setFtpServices(ftpServices.map(service => 
       service.id === id ? { ...service, ...updatedService } : service
     ));
-    setEditingFtpService(null);
   };
 
   const updateTvService = (id: string, updatedService: Partial<TVService>) => {
     setTvServices(tvServices.map(service => 
       service.id === id ? { ...service, ...updatedService } : service
     ));
-    setEditingTvService(null);
   };
 
   const updateCoverageArea = (id: string, updatedArea: Partial<CoverageArea>) => {
     setCoverageAreas(coverageAreas.map(area => 
       area.id === id ? { ...area, ...updatedArea } : area
     ));
-    setEditingCoverageArea(null);
   };
 
   const updateOffer = (id: string, updatedOffer: Partial<Offer>) => {
     setOffers(offers.map(offer => 
       offer.id === id ? { ...offer, ...updatedOffer } : offer
     ));
-    setEditingOffer(null);
   };
 
   const updateLogoSettings = (updatedSettings: Partial<LogoSettings>) => {
@@ -1866,7 +1878,7 @@ export default function AdminPanel() {
                         <div className="flex space-x-2">
                           {!message.isRead && (
                             <Button
-                              onClick={() => markMessageAsRead(message.id)}
+                              onClick={() => markMessageRead(message.id)}
                               size="sm"
                               className="bg-green-500 hover:bg-green-600 text-white"
                             >

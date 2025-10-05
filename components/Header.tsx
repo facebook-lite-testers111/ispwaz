@@ -33,24 +33,29 @@ export default function Header() {
   });
 
   useEffect(() => {
-    // Check if we're in browser environment
-    if (typeof window === 'undefined') return;
+    // Fetch logo settings from API
+    fetch('/api/content?key=logoSettings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setLogoSettings(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading logo settings:', error);
+      });
     
-    try {
-      const savedLogoSettings = localStorage.getItem('wazonline-logo-settings');
-      if (savedLogoSettings) {
-        const parsedSettings = JSON.parse(savedLogoSettings);
-        setLogoSettings(parsedSettings);
-      }
-      
-      const savedContactInfo = localStorage.getItem('wazonline-contact');
-      if (savedContactInfo) {
-        const parsedContactInfo = JSON.parse(savedContactInfo);
-        setContactInfo(parsedContactInfo);
-      }
-    } catch (error) {
-      console.error('Error loading settings:', error);
-    }
+    // Fetch contact info from API
+    fetch('/api/content?key=contactInfo')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setContactInfo(data);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading contact info:', error);
+      });
   }, []);
 
   const navItems = [
