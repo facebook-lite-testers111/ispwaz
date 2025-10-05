@@ -178,16 +178,24 @@ async function writeData(data: any) {
       // Production: Use Vercel KV
       console.log('Writing to Vercel KV...');
       await kv.set(KV_KEY, data);
+      console.log('✓ KV write successful');
       return true;
     } else {
       // Local dev: Use file system
       console.log('Writing to local file system...');
       ensureDataDirectory();
-      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+      const jsonString = JSON.stringify(data, null, 2);
+      fs.writeFileSync(DATA_FILE, jsonString);
+      console.log('✓ File write successful');
       return true;
     }
   } catch (error) {
-    console.error('Error writing data:', error);
+    console.error('❌ Error writing data:', error);
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error);
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    if (error instanceof Error && error.stack) {
+      console.error('Stack trace:', error.stack);
+    }
     return false;
   }
 }
@@ -220,21 +228,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
     }
     
+    console.log(`Updating key: ${key}`);
     const data = await readData();
-    data[key] = value;
-    const writeSuccess = await writeData(data);
+    
+    // Ensure data is a plain object
+    const plainData = JSON.parse(JSON.stringify(data));
+    plainData[key] = value;
+    
+    const writeSuccess = await writeData(plainData);
     
     if (!writeSuccess) {
+      console.error(`Failed to write ${key} to storage`);
       return NextResponse.json({ 
         error: 'Failed to save data'
       }, { status: 500 });
     }
     
     console.log(`✅ Updated ${key} successfully`);
-    return NextResponse.json({ success: true, data: data[key] });
+    return NextResponse.json({ success: true, data: plainData[key] });
   } catch (error) {
     console.error('Error updating data:', error);
-    return NextResponse.json({ error: 'Failed to update data' }, { status: 500 });
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    return NextResponse.json({ 
+      error: 'Failed to update data',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
@@ -242,18 +260,28 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const writeSuccess = await writeData(body);
+    
+    // Ensure body is a plain object
+    const plainData = JSON.parse(JSON.stringify(body));
+    
+    console.log('Updating all data...');
+    const writeSuccess = await writeData(plainData);
     
     if (!writeSuccess) {
+      console.error('Failed to write all data to storage');
       return NextResponse.json({ 
         error: 'Failed to save data'
       }, { status: 500 });
     }
     
     console.log('✅ Updated all data successfully');
-    return NextResponse.json({ success: true, data: body });
+    return NextResponse.json({ success: true, data: plainData });
   } catch (error) {
     console.error('Error updating data:', error);
-    return NextResponse.json({ error: 'Failed to update data' }, { status: 500 });
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    return NextResponse.json({ 
+      error: 'Failed to update data',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
