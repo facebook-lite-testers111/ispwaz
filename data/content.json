@@ -1,0 +1,119 @@
+{
+  "mainPageContent": {
+    "heroTitle": "High Speed Broadband Internet in Waz Online",
+    "heroSubtitle": "Reliable, Affordable & 100% Fiber Optic Connection for Homes and Businesses",
+    "heroImage": "https://images.pexels.com/photos/4974920/pexels-photo-4974920.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "featuresTitle": "Exciting features",
+    "featuresSubtitle": "Join now and enjoy the exciting features from Waz Online",
+    "packagesTitle": "Flexible pricing",
+    "packagesSubtitle": "You check our reasonable and flexible pricing below",
+    "ftpTitle": "FTP/TV Services",
+    "ftpSubtitle": "Access our FTP and TV services",
+    "coverageTitle": "Service Coverage",
+    "coverageSubtitle": "Check if we cover your area",
+    "offersTitle": "Special Offers",
+    "offersSubtitle": "Limited time offers and promotions"
+  },
+  "logoSettings": {
+    "useImage": true,
+    "showText": true,
+    "textColor": "blue-600",
+    "imageUrl": "/logo.jpg"
+  },
+  "contactInfo": {
+    "phone": "01782223904 / 01792223905 / 01719259025",
+    "email": "Mail.soheilbd5@gmail.com",
+    "address": "Dhaka, Bangladesh"
+  },
+  "packages": [
+    {
+      "id": "1",
+      "type": "REGULAR",
+      "name": "Regular 840",
+      "price": 840,
+      "color": "bg-yellow-100",
+      "textColor": "text-blue-600",
+      "features": [
+        "40 Mb/s ( 20 Mb/s + 20 Mb/s Bonus) Internet (Shared)",
+        "Bufferless Cached Content",
+        "Up to 100 Mb/s VAS",
+        "Public IP (IPv6)"
+      ]
+    },
+    {
+      "id": "2",
+      "type": "REGULAR",
+      "name": "Regular 1050",
+      "price": 1050,
+      "color": "bg-yellow-100",
+      "textColor": "text-blue-600",
+      "features": [
+        "60 Mb/s ( 40 Mb/s + 20 Mb/s Bonus) Internet (Shared)",
+        "Bufferless Cached Content",
+        "Up to 150 Mb/s VAS",
+        "Public IP (IPv6)"
+      ]
+    },
+    {
+      "id": "3",
+      "type": "REGULAR",
+      "name": "Regular 1260",
+      "price": 1260,
+      "color": "bg-yellow-100",
+      "textColor": "text-blue-600",
+      "features": [
+        "70 Mb/s ( 50 Mb/s + 20 Mb/s Bonus)",
+        "Bufferless Cached Content",
+        "Up to 150 Mb/s VAS",
+        "Public IP (IPv6)"
+      ]
+    },
+    {
+      "id": "4",
+      "type": "TURBO",
+      "name": "Turbo 1200",
+      "price": 1200,
+      "color": "bg-blue-100",
+      "textColor": "text-green-600",
+      "features": [
+        "30 Mb/s Internet",
+        "Upto 200 Mb/s VAS Speed",
+        "Bufferless YT, FB, CDN",
+        "Public IP (IPv6)"
+      ]
+    }
+  ],
+  "ftpServices": [
+    {
+      "id": "1",
+      "name": "FTP ALL Server",
+      "description": "High-speed file transfer server",
+      "link": "http://103.83.83.3:3000/",
+      "isActive": true
+    }
+  ],
+  "tvServices": [],
+  "coverageAreas": [
+    {
+      "id": "1759677229040",
+      "area": "Dhaka Central",
+      "status": "Available",
+      "description": "Full coverage in Dhaka city with 99.9% uptime guarantee"
+    }
+  ],
+  "offers": [
+    {
+      "id": "1",
+      "title": "New Connection Offer",
+      "description": "Get 50% off on first month",
+      "isActive": true
+    }
+  ],
+  "messages": [],
+  "cardDesigns": {
+    "package": "default-website",
+    "ftp": "default-website",
+    "coverage": "glass-light",
+    "offer": "table-layout"
+  }
+}
