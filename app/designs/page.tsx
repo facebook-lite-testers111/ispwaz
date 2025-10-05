@@ -934,7 +934,7 @@ const sampleData = {
 export default function DesignShowcase() {
   const [designs] = useState(originalDesigns);
   const [selectedDesign, setSelectedDesign] = useState<string | null>(null);
-  const [currentType, setCurrentType] = useState('package');
+  const [currentType, setCurrentType] = useState<'package' | 'ftp' | 'coverage' | 'offer'>('package');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
