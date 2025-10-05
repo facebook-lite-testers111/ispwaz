@@ -13,11 +13,18 @@ function readData() {
 }
 
 function writeData(data: any) {
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+  try {
+    const dataDir = path.join(process.cwd(), 'data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    return true;
+  } catch (error) {
+    // Vercel has read-only filesystem, log the error but don't fail
+    console.warn('Unable to write to filesystem (Vercel read-only):', error);
+    return false;
   }
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
 }
 
 // GET: Read all messages
@@ -49,7 +56,16 @@ export async function POST(request: NextRequest) {
     };
     
     data.messages.push(newMessage);
-    writeData(data);
+    const writeSuccess = writeData(data);
+    
+    if (!writeSuccess) {
+      console.warn('Message not persisted (read-only filesystem)');
+      return NextResponse.json({ 
+        success: true, 
+        message: newMessage,
+        warning: 'Message not persisted on serverless environment'
+      });
+    }
     
     return NextResponse.json({ success: true, message: newMessage });
   } catch (error) {
@@ -71,7 +87,15 @@ export async function PATCH(request: NextRequest) {
     const messageIndex = data.messages.findIndex((m: any) => m.id === id);
     if (messageIndex !== -1) {
       data.messages[messageIndex].isRead = isRead;
-      writeData(data);
+      const writeSuccess = writeData(data);
+      
+      if (!writeSuccess) {
+        console.warn('Message update not persisted (read-only filesystem)');
+        return NextResponse.json({ 
+          success: true,
+          warning: 'Changes not persisted on serverless environment'
+        });
+      }
     }
     
     return NextResponse.json({ success: true });
@@ -98,7 +122,15 @@ export async function DELETE(request: NextRequest) {
     }
     
     data.messages = data.messages.filter((m: any) => m.id !== id);
-    writeData(data);
+    const writeSuccess = writeData(data);
+    
+    if (!writeSuccess) {
+      console.warn('Message deletion not persisted (read-only filesystem)');
+      return NextResponse.json({ 
+        success: true,
+        warning: 'Changes not persisted on serverless environment'
+      });
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {
