@@ -1,10 +1,133 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'content.json');
+const KV_KEY = 'isp_content_data';
 
-// Ensure data directory exists
+// Check if we're in a Vercel environment
+const isVercel = process.env.VERCEL === '1' || process.env.KV_REST_API_URL;
+
+// Default data structure
+const getDefaultData = () => ({
+  mainPageContent: {
+    heroTitle: "High Speed Broadband Internet in Waz Online",
+    heroSubtitle: "Reliable, Affordable & 100% Fiber Optic Connection for Homes and Businesses",
+    heroImage: "https://images.pexels.com/photos/4974920/pexels-photo-4974920.jpeg?auto=compress&cs=tinysrgb&w=600",
+    featuresTitle: "Exciting features",
+    featuresSubtitle: "Join now and enjoy the exciting features from Waz Online",
+    packagesTitle: "Flexible pricing",
+    packagesSubtitle: "You check our reasonable and flexible pricing below",
+    ftpTitle: "FTP/TV Services",
+    ftpSubtitle: "Access our FTP and TV services",
+    coverageTitle: "Service Coverage",
+    coverageSubtitle: "Check if we cover your area",
+    offersTitle: "Special Offers",
+    offersSubtitle: "Limited time offers and promotions"
+  },
+  logoSettings: {
+    useImage: true,
+    showText: true,
+    textColor: "blue-600",
+    imageUrl: "/logo.jpg"
+  },
+  contactInfo: {
+    phone: "01782223904 / 01792223905 / 01719259025",
+    email: "Mail.soheilbd5@gmail.com",
+    address: "Dhaka, Bangladesh"
+  },
+  packages: [
+    {
+      id: "1",
+      name: "Basic Plan",
+      price: 500,
+      speed: "15 Mbps",
+      description: "Perfect for home users and light browsing",
+      features: ["15 Mbps Speed", "Unlimited Data", "24/7 Support", "WiFi Router Included"],
+      category: "home",
+      popular: false
+    },
+    {
+      id: "2",
+      name: "Standard Plan",
+      price: 800,
+      speed: "25 Mbps",
+      description: "Great for streaming and small families",
+      features: ["25 Mbps Speed", "Unlimited Data", "24/7 Support", "Free Installation", "BDIX included"],
+      category: "home",
+      popular: true
+    },
+    {
+      id: "3",
+      name: "Premium Plan",
+      price: 1200,
+      speed: "50 Mbps",
+      description: "Best for gaming and large families",
+      features: ["50 Mbps Speed", "Unlimited Data", "Priority Support", "Free Installation", "OTT Subscription"],
+      category: "home",
+      popular: false
+    }
+  ],
+  ftpServices: [
+    {
+      id: "1",
+      name: "Movie Server",
+      description: "Latest HD movies collection",
+      icon: "film",
+      size: "10 TB"
+    },
+    {
+      id: "2",
+      name: "TV Series Hub",
+      description: "Popular TV series archive",
+      icon: "tv",
+      size: "5 TB"
+    }
+  ],
+  tvServices: [
+    {
+      id: "1",
+      name: "Live TV Streaming",
+      description: "Watch live TV channels",
+      icon: "tv",
+      channels: "100+"
+    }
+  ],
+  coverageAreas: [
+    {
+      id: "1",
+      area: "Mirpur",
+      description: "Full coverage in Mirpur area",
+      status: "available"
+    },
+    {
+      id: "2",
+      area: "Dhanmondi",
+      description: "Expanding coverage",
+      status: "coming-soon"
+    }
+  ],
+  offers: [
+    {
+      id: "1",
+      title: "New Year Special",
+      description: "Get 2 months free on annual subscription",
+      discount: "20%",
+      validUntil: "2025-12-31",
+      isActive: true
+    }
+  ],
+  cardDesigns: {
+    package: 'modern',
+    ftp: 'modern',
+    coverage: 'modern',
+    offer: 'modern'
+  },
+  messages: []
+});
+
+// Ensure data directory exists (for local dev)
 function ensureDataDirectory() {
   const dataDir = path.join(process.cwd(), 'data');
   if (!fs.existsSync(dataDir)) {
@@ -12,164 +135,67 @@ function ensureDataDirectory() {
   }
 }
 
-// Read data from file
-function readData() {
-  ensureDataDirectory();
-  
-  if (!fs.existsSync(DATA_FILE)) {
-    // Create default data file if it doesn't exist
-    const defaultData = {
-      mainPageContent: {
-        heroTitle: "High Speed Broadband Internet in Waz Online",
-        heroSubtitle: "Reliable, Affordable & 100% Fiber Optic Connection for Homes and Businesses",
-        heroImage: "https://images.pexels.com/photos/4974920/pexels-photo-4974920.jpeg?auto=compress&cs=tinysrgb&w=600",
-        featuresTitle: "Exciting features",
-        featuresSubtitle: "Join now and enjoy the exciting features from Waz Online",
-        packagesTitle: "Flexible pricing",
-        packagesSubtitle: "You check our reasonable and flexible pricing below",
-        ftpTitle: "FTP/TV Services",
-        ftpSubtitle: "Access our FTP and TV services",
-        coverageTitle: "Service Coverage",
-        coverageSubtitle: "Check if we cover your area",
-        offersTitle: "Special Offers",
-        offersSubtitle: "Limited time offers and promotions"
-      },
-      logoSettings: {
-        useImage: true,
-        showText: true,
-        textColor: "blue-600",
-        imageUrl: "/logo.jpg"
-      },
-      contactInfo: {
-        phone: "01782223904 / 01792223905 / 01719259025",
-        email: "Mail.soheilbd5@gmail.com",
-        address: "Dhaka, Bangladesh"
-      },
-      packages: [
-        {
-          id: "1",
-          type: "REGULAR",
-          name: "Regular 840",
-          price: 840,
-          color: "bg-yellow-100",
-          textColor: "text-blue-600",
-          features: [
-            "40 Mb/s ( 20 Mb/s + 20 Mb/s Bonus) Internet (Shared)",
-            "Bufferless Cached Content",
-            "Up to 100 Mb/s VAS",
-            "Public IP (IPv6)"
-          ]
-        },
-        {
-          id: "2",
-          type: "REGULAR",
-          name: "Regular 1050",
-          price: 1050,
-          color: "bg-yellow-100",
-          textColor: "text-blue-600",
-          features: [
-            "60 Mb/s ( 40 Mb/s + 20 Mb/s Bonus) Internet (Shared)",
-            "Bufferless Cached Content",
-            "Up to 150 Mb/s VAS",
-            "Public IP (IPv6)"
-          ]
-        },
-        {
-          id: "3",
-          type: "REGULAR",
-          name: "Regular 1260",
-          price: 1260,
-          color: "bg-yellow-100",
-          textColor: "text-blue-600",
-          features: [
-            "70 Mb/s ( 50 Mb/s + 20 Mb/s Bonus)",
-            "Bufferless Cached Content",
-            "Up to 150 Mb/s VAS",
-            "Public IP (IPv6)"
-          ]
-        },
-        {
-          id: "4",
-          type: "TURBO",
-          name: "Turbo 1200",
-          price: 1200,
-          color: "bg-blue-100",
-          textColor: "text-green-600",
-          features: [
-            "30 Mb/s Internet",
-            "Upto 200 Mb/s VAS Speed",
-            "Bufferless YT, FB, CDN",
-            "Public IP (IPv6)"
-          ]
-        }
-      ],
-      ftpServices: [
-        {
-          id: "1",
-          name: "FTP Server 1",
-          description: "High-speed file transfer server",
-          link: "ftp://ftp.example.com",
-          isActive: true
-        }
-      ],
-      tvServices: [
-        {
-          id: "1",
-          name: "TV Service 1",
-          description: "Premium TV channels",
-          link: "http://tv.example.com",
-          isActive: true
-        }
-      ],
-      coverageAreas: [
-        {
-          id: "1",
-          area: "Dhaka Central",
-          status: "Available",
-          description: "Full coverage in Dhaka Central area"
-        }
-      ],
-      offers: [
-        {
-          id: "1",
-          title: "New Connection Offer",
-          description: "Get 50% off on first month",
-          isActive: true
-        }
-      ],
-      messages: [],
-      cardDesigns: {
-        package: "default-website",
-        ftp: "default-website",
-        coverage: "default-website",
-        offer: "default-website"
+// Read data from KV or file system
+async function readData() {
+  try {
+    if (isVercel) {
+      // Production: Use Vercel KV
+      console.log('Reading from Vercel KV...');
+      const data = await kv.get(KV_KEY);
+      
+      if (!data) {
+        console.log('No data in KV, initializing with defaults...');
+        const defaultData = getDefaultData();
+        await kv.set(KV_KEY, defaultData);
+        return defaultData;
       }
-    };
-    fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData, null, 2));
-    return defaultData;
+      
+      return data;
+    } else {
+      // Local dev: Use file system
+      console.log('Reading from local file system...');
+      ensureDataDirectory();
+      
+      if (!fs.existsSync(DATA_FILE)) {
+        const defaultData = getDefaultData();
+        fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData, null, 2));
+        return defaultData;
+      }
+      
+      const fileData = fs.readFileSync(DATA_FILE, 'utf-8');
+      return JSON.parse(fileData);
+    }
+  } catch (error) {
+    console.error('Error reading data:', error);
+    return getDefaultData();
   }
-  
-  const data = fs.readFileSync(DATA_FILE, 'utf-8');
-  return JSON.parse(data);
 }
 
-// Write data to file
-function writeData(data: any) {
+// Write data to KV or file system
+async function writeData(data: any) {
   try {
-    ensureDataDirectory();
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    return true;
+    if (isVercel) {
+      // Production: Use Vercel KV
+      console.log('Writing to Vercel KV...');
+      await kv.set(KV_KEY, data);
+      return true;
+    } else {
+      // Local dev: Use file system
+      console.log('Writing to local file system...');
+      ensureDataDirectory();
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+      return true;
+    }
   } catch (error) {
-    // Vercel has read-only filesystem, log the error but don't fail
-    console.warn('Unable to write to filesystem (Vercel read-only):', error);
+    console.error('Error writing data:', error);
     return false;
   }
 }
 
-// GET: Read all content
+// GET: Read all content or specific key
 export async function GET(request: NextRequest) {
   try {
-    const data = readData();
+    const data = await readData();
     const { searchParams } = new URL(request.url);
     const key = searchParams.get('key');
     
@@ -184,7 +210,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Update content
+// POST: Update specific key
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -194,20 +220,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Key is required' }, { status: 400 });
     }
     
-    const data = readData();
+    const data = await readData();
     data[key] = value;
-    const writeSuccess = writeData(data);
+    const writeSuccess = await writeData(data);
     
     if (!writeSuccess) {
-      // On Vercel, writes fail but we return success to prevent errors
-      console.warn('Data not persisted (read-only filesystem)');
       return NextResponse.json({ 
-        success: true, 
-        data: data[key],
-        warning: 'Changes not persisted on serverless environment'
-      });
+        error: 'Failed to save data'
+      }, { status: 500 });
     }
     
+    console.log(`✅ Updated ${key} successfully`);
     return NextResponse.json({ success: true, data: data[key] });
   } catch (error) {
     console.error('Error updating data:', error);
@@ -219,18 +242,15 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const writeSuccess = writeData(body);
+    const writeSuccess = await writeData(body);
     
     if (!writeSuccess) {
-      // On Vercel, writes fail but we return success to prevent errors
-      console.warn('Data not persisted (read-only filesystem)');
       return NextResponse.json({ 
-        success: true, 
-        data: body,
-        warning: 'Changes not persisted on serverless environment'
-      });
+        error: 'Failed to save data'
+      }, { status: 500 });
     }
     
+    console.log('✅ Updated all data successfully');
     return NextResponse.json({ success: true, data: body });
   } catch (error) {
     console.error('Error updating data:', error);

@@ -1,28 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import fs from 'fs';
 import path from 'path';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'content.json');
+const KV_KEY = 'isp_content_data';
 
-function readData() {
-  if (!fs.existsSync(DATA_FILE)) {
+// Check if we're in a Vercel environment
+const isVercel = process.env.VERCEL === '1' || process.env.KV_REST_API_URL;
+
+// Read data from KV or file system
+async function readData() {
+  try {
+    if (isVercel) {
+      const data = await kv.get(KV_KEY);
+      return data || { messages: [] };
+    } else {
+      if (!fs.existsSync(DATA_FILE)) {
+        return { messages: [] };
+      }
+      const fileData = fs.readFileSync(DATA_FILE, 'utf-8');
+      return JSON.parse(fileData);
+    }
+  } catch (error) {
+    console.error('Error reading data:', error);
     return { messages: [] };
   }
-  const data = fs.readFileSync(DATA_FILE, 'utf-8');
-  return JSON.parse(data);
 }
 
-function writeData(data: any) {
+// Write data to KV or file system
+async function writeData(data: any) {
   try {
-    const dataDir = path.join(process.cwd(), 'data');
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    if (isVercel) {
+      await kv.set(KV_KEY, data);
+      return true;
+    } else {
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+      return true;
     }
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    return true;
   } catch (error) {
-    // Vercel has read-only filesystem, log the error but don't fail
-    console.warn('Unable to write to filesystem (Vercel read-only):', error);
+    console.error('Error writing data:', error);
     return false;
   }
 }
@@ -30,7 +51,7 @@ function writeData(data: any) {
 // GET: Read all messages
 export async function GET() {
   try {
-    const data = readData();
+    const data = await readData();
     return NextResponse.json(data.messages || []);
   } catch (error) {
     console.error('Error reading messages:', error);
@@ -42,7 +63,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const message = await request.json();
-    const data = readData();
+    const data = await readData();
     
     if (!data.messages) {
       data.messages = [];
@@ -56,17 +77,15 @@ export async function POST(request: NextRequest) {
     };
     
     data.messages.push(newMessage);
-    const writeSuccess = writeData(data);
+    const writeSuccess = await writeData(data);
     
     if (!writeSuccess) {
-      console.warn('Message not persisted (read-only filesystem)');
       return NextResponse.json({ 
-        success: true, 
-        message: newMessage,
-        warning: 'Message not persisted on serverless environment'
-      });
+        error: 'Failed to save message'
+      }, { status: 500 });
     }
     
+    console.log('✅ Message saved successfully');
     return NextResponse.json({ success: true, message: newMessage });
   } catch (error) {
     console.error('Error adding message:', error);
@@ -78,7 +97,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const { id, isRead } = await request.json();
-    const data = readData();
+    const data = await readData();
     
     if (!data.messages) {
       data.messages = [];
@@ -87,15 +106,15 @@ export async function PATCH(request: NextRequest) {
     const messageIndex = data.messages.findIndex((m: any) => m.id === id);
     if (messageIndex !== -1) {
       data.messages[messageIndex].isRead = isRead;
-      const writeSuccess = writeData(data);
+      const writeSuccess = await writeData(data);
       
       if (!writeSuccess) {
-        console.warn('Message update not persisted (read-only filesystem)');
         return NextResponse.json({ 
-          success: true,
-          warning: 'Changes not persisted on serverless environment'
-        });
+          error: 'Failed to update message'
+        }, { status: 500 });
       }
+      
+      console.log('✅ Message updated successfully');
     }
     
     return NextResponse.json({ success: true });
@@ -115,23 +134,22 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Message ID is required' }, { status: 400 });
     }
     
-    const data = readData();
+    const data = await readData();
     
     if (!data.messages) {
       data.messages = [];
     }
     
     data.messages = data.messages.filter((m: any) => m.id !== id);
-    const writeSuccess = writeData(data);
+    const writeSuccess = await writeData(data);
     
     if (!writeSuccess) {
-      console.warn('Message deletion not persisted (read-only filesystem)');
       return NextResponse.json({ 
-        success: true,
-        warning: 'Changes not persisted on serverless environment'
-      });
+        error: 'Failed to delete message'
+      }, { status: 500 });
     }
     
+    console.log('✅ Message deleted successfully');
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting message:', error);
